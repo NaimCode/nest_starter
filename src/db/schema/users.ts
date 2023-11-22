@@ -1,4 +1,4 @@
-import { InferInsertModel, InferSelectModel, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import {
   boolean,
   integer,
@@ -8,6 +8,7 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import cities from './cities';
 import countries from './countries';
@@ -17,7 +18,10 @@ import userStatus from './user_status';
 const users = pgTable('users', {
   id: serial('id').primaryKey().notNull(),
   role: integer('role').references(() => roles.id),
-  provider: varchar('provider', { length: 255 }),
+  provider: varchar('provider', {
+    length: 50,
+    enum: ['apple', 'facebook', 'google', 'email', 'phone', 'magic-link'],
+  }).notNull(),
   providerId: varchar('provider_id', { length: 255 }),
   email: varchar('email', { length: 255 }).unique(),
   username: varchar('username', { length: 255 }).unique(),
@@ -50,5 +54,5 @@ const users = pgTable('users', {
 
 export default users;
 
-export type User = InferSelectModel<typeof users>;
-export type UserInsert = InferInsertModel<typeof users>;
+export const insertUserSchema = createInsertSchema(users);
+export const selectUserSchema = createSelectSchema(users);
