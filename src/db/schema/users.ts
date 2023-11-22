@@ -17,7 +17,8 @@ import userStatus from './user_status';
 const users = pgTable('users', {
   id: serial('id').primaryKey().notNull(),
   role: integer('role').references(() => roles.id),
-
+  provider: varchar('provider', { length: 255 }),
+  providerId: varchar('provider_id', { length: 255 }),
   email: varchar('email', { length: 255 }).unique(),
   username: varchar('username', { length: 255 }).unique(),
   firstName: varchar('first_name', { length: 255 }),
